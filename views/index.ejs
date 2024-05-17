@@ -1,0 +1,55 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Hello, <%= user.name %></a>
+    </div>
+</nav>
+<div>
+    <h2>This is your notifications list</h2 <% for( notification of user.notifications) { %>
+    <ul id="notification" style="list-style-type: none; margin: 0; padding: 0; list-style: none;">
+        <l style="list-style-type: none;">
+            <div class="card mt-3">
+                <div class="card-body" style="width: 18rem;">
+                    <h5 class="card-title">
+                        <%= notification.title %>
+                    </h5>
+                    <p class="card-text">
+                        <%= notification.description %>
+                    </p>
+                    <% let date=new Date(notification.createdAt) %>
+                        <p class="card-text" style="color: #999;">
+                            <%= date.toLocaleString() %>
+                        </p>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <% } %>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    let socket = io()
+    let notifications = document.getElementById('notification')
+
+    socket.on("notification_<%=user.id%>", notification => {
+        console.log('client', notification)
+        let date = new Date(notification.createdAt)
+        date = date.toLocaleString()
+
+        let notif = document.createElement('div')
+        notif.className = "card mt-3"
+        notif.innerHTML = `
+            <div class="card-body" style="width: 18rem;">
+                <h5 class="card-title">
+                    ${notification.title}
+                </h5>
+                <p class="card-text">
+                    ${notification.description}
+                </p>
+                <p class="card-text" style="color: #999;">
+                    ${date}
+                </p>
+            </div>
+                `
+        notifications.appendChild(notif)
+    })
+</script>
